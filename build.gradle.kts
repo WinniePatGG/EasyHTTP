@@ -15,6 +15,7 @@ java {
         languageVersion = JavaLanguageVersion.of(21)
     }
     withSourcesJar()
+    withJavadocJar()
 }
 
 dependencies {
@@ -25,6 +26,14 @@ dependencies {
 
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
+}
+
+tasks.withType<Javadoc>().configureEach {
+    options.encoding = "UTF-8"
+    (options as StandardJavadocDocletOptions).apply {
+        addStringOption("Xdoclint:all,-missing", "-quiet")
+        links("https://docs.oracle.com/en/java/javase/21/docs/api/")
+    }
 }
 
 tasks.test {
