@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "de.winniepat"
-version = "2.0"
+version = "1.0"
 
 repositories {
     mavenCentral()
@@ -44,32 +44,44 @@ publishing {
     }
 
     repositories {
-        val publishUsername = providers.gradleProperty("publish.username")
-        val publishPassword = providers.gradleProperty("publish.password")
-        if (publishUsername.isPresent && publishPassword.isPresent) {
-            maven {
-                name = "reposilite"
-                url = uri("https://maven.winniepat.de/releases")
+        maven {
+            name = "reposilite"
+            url = uri("https://maven.winniepat.de/releases")
 
-                credentials {
-                    username = publishUsername.get()
-                    password = publishPassword.get()
-                }
+            credentials {
+                username = providers.gradleProperty("reposilite.username").orElse("").get()
+                password = providers.gradleProperty("reposilite.password").orElse("").get()
             }
         }
 
-        val gprUser = providers.gradleProperty("gpr.user")
-        val gprKey = providers.gradleProperty("gpr.key")
-        if (gprUser.isPresent && gprKey.isPresent) {
-            maven {
-                name = "GitHubPackages"
-                url = uri("https://maven.pkg.github.com/WinniePatGG/EasyHTTP")
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/WinniePatGG/EasyHTTP")
 
-                credentials {
-                    username = gprUser.get()
-                    password = gprKey.get()
-                }
+            credentials {
+                username = providers.gradleProperty("gpr.user").orElse("").get()
+                password = providers.gradleProperty("gpr.key").orElse("").get()
             }
+        }
+    }
+}
+
+val requiredCredentials = mapOf(
+    "publishMavenJavaPublicationToReposiliteRepository" to
+        listOf("reposilite.username", "reposilite.password"),
+    "publishMavenJavaPublicationToGitHubPackagesRepository" to
+        listOf("gpr.user", "gpr.key"),
+)
+
+tasks.withType<PublishToMavenRepository>().configureEach {
+    val required = requiredCredentials[this.name] ?: emptyList()
+    doFirst {
+        val missing = required.filterNot { providers.gradleProperty(it).isPresent }
+        if (missing.isNotEmpty()) {
+            throw GradleException(
+                "Cannot publish to $name: missing Gradle properties ${missing.joinToString()}. " +
+                    "Add them to gradle.properties (gitignored) or pass -P<key>=<value>."
+            )
         }
     }
 }
