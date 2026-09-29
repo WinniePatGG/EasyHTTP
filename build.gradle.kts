@@ -1,9 +1,10 @@
 plugins {
     id("java")
+    id("maven-publish")
 }
 
-group = "org.example"
-version = "1.0-SNAPSHOT"
+group = "de.winniepat"
+version = "1.0"
 
 repositories {
     mavenCentral()
@@ -17,4 +18,24 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            from(components["java"])
+        }
+    }
+
+    repositories {
+        maven {
+            name = "reposilite"
+            url = uri("https://maven.winniepat.de/releases")
+
+            credentials {
+                username = providers.gradleProperty("publish.username").get()
+                password = providers.gradleProperty("publish.password").get()
+            }
+        }
+    }
 }
