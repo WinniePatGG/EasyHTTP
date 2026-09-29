@@ -24,6 +24,8 @@ publishing {
     publications {
         create<MavenPublication>("mavenJava") {
             from(components["java"])
+
+            artifactId = "easyhttp"
         }
     }
 
@@ -35,6 +37,16 @@ publishing {
             credentials {
                 username = providers.gradleProperty("publish.username").get()
                 password = providers.gradleProperty("publish.password").get()
+            }
+        }
+
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/WinniePatGG/EasyHTTP")
+
+            credentials {
+                username = providers.gradleProperty("gpr.user").get()
+                password = providers.gradleProperty("gpr.key").get()
             }
         }
     }
