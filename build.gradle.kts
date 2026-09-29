@@ -4,7 +4,9 @@ plugins {
 }
 
 group = "de.winniepat"
-version = "1.0"
+
+// Overridden by CI via -Pversion=<x> when releasing; see .github/workflows/release.yml
+version = providers.gradleProperty("version").getOrElse("1.0")
 
 repositories {
     mavenCentral()
@@ -49,6 +51,36 @@ publishing {
             from(components["java"])
 
             artifactId = "easyhttp"
+
+            pom {
+                name.set("EasyHTTP")
+                description.set(
+                    "A small, dependency-free HTTP client for Java 21 built on the JDK's HttpClient."
+                )
+                url.set("https://github.com/WinniePatGG/EasyHTTP")
+                inceptionYear.set("2026")
+
+                licenses {
+                    license {
+                        name.set("MIT License")
+                        url.set("https://opensource.org/licenses/MIT")
+                        distribution.set("repo")
+                    }
+                }
+
+                developers {
+                    developer {
+                        id.set("WinniePatGG")
+                        name.set("Patrick Schuler")
+                    }
+                }
+
+                scm {
+                    url.set("https://github.com/WinniePatGG/EasyHTTP")
+                    connection.set("scm:git:https://github.com/WinniePatGG/EasyHTTP.git")
+                    developerConnection.set("scm:git:https://github.com/WinniePatGG/EasyHTTP.git")
+                }
+            }
         }
     }
 
