@@ -1,5 +1,7 @@
-.gradle
-.idea
-build
-gradle
-gradle.properies
+.gradle/
+.idea/
+build/
+
+gradle.properties
+
+!gradle/wrapper/
